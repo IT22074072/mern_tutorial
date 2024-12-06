@@ -3,7 +3,7 @@ import Product from "../models/product.model.js";
 
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find({});  //need to import Product model
+    const products = await Product.find({}); //need to import Product model
     res.status(200).json({ success: true, data: products });
   } catch (error) {
     console.log("Error in fetching products: ", error.message);
@@ -16,8 +16,7 @@ export const createProduct = async (req, res) => {
 
   if (!product.name || !product.price || !product.image) {
     return res
-      .status(400)
-      .json({ success: false, message: "Please provide all fields" });
+      .status(400).json({ success: false, message: "Please provide all fields" });
   }
 
   const newProduct = new Product(product); //create a Product Model object
@@ -35,15 +34,19 @@ export const deleteProduct = async (req, res) => {
   const { id } = req.params; //passing the product is through params]
   console.log("id:", id);
 
+  //if id not found
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(404).json({ success: false, message: "Product not found" });
+  }
+
   try {
     await Product.findByIdAndDelete(id);
     res
-      .status(200)
-      .json({ success: true, message: "Product deleted Successfully!" });
+      .status(200).json({ success: true, message: "Product deleted Successfully!" });
   } catch (error) {
-    //if not found the id
+    //internal server error
     console.log("Error in deleting products: ", error.message);
-    res.status(404).json({ success: false, message: "Product not found" });
+    res.status(500).json({ success: false, message: "Server Error" });
   }
 };
 
@@ -55,8 +58,7 @@ export const updateProduct = async (req, res) => {
   //404 error if id not found  //need to import mongoose
   if (!mongoose.Types.ObjectId.isValid(id)) {
     return res
-      .status(404)
-      .json({ success: false, message: "Product not found" });
+      .status(404).json({ success: false, message: "Product not found" });
   }
   try {
     const updatedProduct = await Product.findByIdAndUpdate(id, product, {
