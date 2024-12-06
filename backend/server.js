@@ -10,7 +10,7 @@ const app = express();
 app.use(express.json()); //allows us to accept JSON data in the req.body- middleware
 
 
-app.use("/api/products", productRoutes);
+app.use("/api/products", productRoutes); //sketch for routers
 
 console.log(process.env.MONGO_URI);
 
